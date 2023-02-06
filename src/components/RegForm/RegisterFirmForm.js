@@ -53,6 +53,10 @@ const SignupSchema = Yup.object().shape({
 
 const RegisterFirmForm = () => {
   const [fileSrc, setFileSrc] = useState('')
+  const [nameGUSValue, setNameGUSValue] = useState('')
+  const [cityGUSValue, setCityGUSValue] = useState('')
+  const [addressGUSValue, setAddressGUSValue] = useState('')
+  const [gusData, setGusData] = useState({})
 
   const openFile = (event) => {
     let input = event.target
@@ -65,36 +69,19 @@ const RegisterFirmForm = () => {
   }
 
   const getDataFromGUS = async (nip) => {
-    // const response = await axios.get(
-    //   // 5261040567 9522227606
-    //   `https://cross-rental.newsystems.pl/admin/site/gus?nip=${nip}`
-    // )
-    fetch(`https://cross-rental.newsystems.pl/admin/site/gus?nip=${nip}`)
-      .then((res) => console.log(res))
-      .catch((e) => console.log(e))
-    // if (response.status === '212') {
-    //   throw new Error(`Could not fetch, status: ${response.data.status}`)
-    // } else {
-    //   return response.data[0][0]
-    // }
+    const res = await axios.get(
+      // 5261040567 9522227606
+      `https://cross-rental.newsystems.pl/admin/site/gus?nip=${nip}`
+    )
+    if (res.status != '200') {
+      throw new Error(`Could not fetch, status: ${res.status}`)
+    } else {
+      setGusData(res?.data)
+      setNameGUSValue(res?.data.gus?.name)
+      setCityGUSValue(res?.data.gus?.city)
+      setAddressGUSValue(res?.data.gus?.address)
+    }
   }
-
-  // const getGus = () => {
-  //   let nip = $('#customer-nip').val()
-  //   $.get('/admin/customer/gus?nip=' + nip, function (data) {
-  //     let customer = JSON.parse(data)
-  //     if (customer.error == 'ok') {
-  //       customer = customer.gus
-  //       $('#customer-name').val(customer.name)
-  //       $('#customer-address').val(customer.address)
-  //       $('#customer-city').val(customer.city)
-  //       $('#customer-zip').val(customer.zip)
-  //     } else {
-  //       toastr.error(customer.error)
-  //     }
-  //   })
-  //   return false
-  // }
 
   return (
     <>
@@ -149,7 +136,7 @@ const RegisterFirmForm = () => {
               console.log(e)
             })
         }}>
-        {({ isSubmitting, setFieldValue, getValues, values }) => (
+        {({ setFieldValue, values }) => (
           <Form id='register-form' style={{ marginTop: 50 }}>
             <div className='site-register' style={{ padding: '0 0 0 41px' }}>
               <div className='mt-5 row register-box-body'>
@@ -196,6 +183,12 @@ const RegisterFirmForm = () => {
                       <span style={{ color: 'red', marginLeft: 5 }}>*</span>
                     </label>
                     <Field
+                      value={nameGUSValue ? nameGUSValue : values.first_name}
+                      onChange={(event) => {
+                        nameGUSValue
+                          ? setNameGUSValue(event.target.value)
+                          : setFieldValue('first_name', event.target.value)
+                      }}
                       type='text'
                       id='firm-first_name'
                       className='input-login form-control required'
@@ -359,6 +352,12 @@ const RegisterFirmForm = () => {
                       <span style={{ color: 'red', marginLeft: 5 }}>*</span>
                     </label>
                     <Field
+                      value={addressGUSValue ? addressGUSValue : values.address}
+                      onChange={(event) => {
+                        addressGUSValue
+                          ? setAddressGUSValue(event.target.value)
+                          : setFieldValue('address', event.target.value)
+                      }}
                       type='text'
                       id='firm-address'
                       className='input-login form-control required'
@@ -376,6 +375,12 @@ const RegisterFirmForm = () => {
                       <span style={{ color: 'red', marginLeft: 5 }}>*</span>
                     </label>
                     <Field
+                      value={cityGUSValue ? cityGUSValue : values.city}
+                      onChange={(event) => {
+                        cityGUSValue
+                          ? setCityGUSValue(event.target.value)
+                          : setFieldValue('city', event.target.value)
+                      }}
                       type='text'
                       id='firm-city'
                       className='input-login form-control required'
