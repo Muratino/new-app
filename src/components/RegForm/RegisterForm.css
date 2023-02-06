@@ -1,0 +1,7 @@
+.messages > .form-group {
+    margin-right: 0;
+    width: 30%;
+}
+.login-button {
+    width: 150px;
+}
